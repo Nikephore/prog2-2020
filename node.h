@@ -1,4 +1,5 @@
-/*** @file  node.h* @author Profesores Prog2
+/*** @file  node.h
+* @author Profesores Prog2
 * @date 29 January 2020* @version 1.0
 * @brief Library to manage TAD Node** @details** @see4
 */
@@ -43,7 +44,7 @@ long node_getId (const Node * n);
 * @param n Node address
 * @return Returns a pointer to the name of the node, or NULL in case of error
 */
-const char* node_getName (Node * n);
+char* node_getName (const Node * n);
 
 /*** @brief Gets the number of connections of a given node.
 * @param n Node address
