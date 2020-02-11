@@ -12,7 +12,13 @@ int main ()
     /*inicializamos los nodos*/
 
     n1 = node_init();
+    if(!n1) return ERROR;
+
     n2 = node_init();
+    if(!n2){
+        node_free(n1);
+        return ERROR;
+    }
 
     /*Establecemos valores de n1*/
     node_setName(n1, "first");
@@ -39,6 +45,8 @@ int main ()
     fprintf(stdout, "Id del primer nodo: %ld\n", node_getId(n1));
     fprintf(stdout, "Nombre del segundo nodo: %s\n\n", node_getName(n2));
 
+    node_free(n2);
+
     n2 = node_copy(n1);
 
     node_print(stdout, n1);
@@ -52,6 +60,9 @@ int main ()
     else{
         fprintf(stdout, "¿Son iguales?: NO\n");
     }
+
+    node_free(n1);
+    node_free(n2);
 
     return 0;
 }

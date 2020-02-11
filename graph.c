@@ -1,7 +1,17 @@
 #include <stdio.h>
 #include <stdlib.h>
+#include <string.h>
+#include <errno.h>
 #include "graph.h"
 
+#define MAX_NODES 256 /*!< Maximum node name length */
+
+/*Defini de funciones privadas*/
+
+int find_node_index(const Graph *, long);
+int* graph_getConnectionsIndex(const Graph *, int);
+
+/*Definition of the structure*/
 struct _Graph {
     Node *nodes[MAX_NODES]; /*!<Array with the graph nodes */
     Bool connections[MAX_NODES][MAX_NODES]; /*!<Adjacency matrix */
@@ -12,17 +22,20 @@ struct _Graph {
 
 Graph * graph_init (){
     int i, j;
-    Graph *g=NULL;
+
+    Graph *g = NULL;
+
     g=(Graph*)malloc(sizeof(Graph));
+
     if(!g) return NULL;
     
     g->num_nodes=0;
     g->num_edges=0;
 
-    for(i=0; i<MAX_NODES; i++){
+    for(i=0; i < MAX_NODES; i++){
         g->nodes[i]=NULL;
         for(j=0; j<MAX_NODES; j++){
-            g->connections[i][j];
+            g->connections[i][j] = 0;
         }
     }
 
@@ -31,8 +44,8 @@ Graph * graph_init (){
 
 void graph_free (Graph *g){
     int i;
-    for(i=0; i<g->num_nodes; i++0){
-        node_destroy(g->nodes[i]);
+    for(i=0; i<g->num_nodes; i++){
+        node_free(g->nodes[i]);
     }
 
     free(g);
@@ -45,7 +58,7 @@ Status graph_insertNode (Graph *g, const Node *n){
   if(!g) return ERROR;
   if(!n) return ERROR;
 
-  aux=node_copy(n);
+  aux = node_copy(n);
 
   g->nodes[g->num_nodes]=aux;
 
@@ -69,13 +82,13 @@ Status graph_insertEdge (Graph *g, const long nId1, const long nId2){
   if(!g) return ERROR;
 
 
-  f1=find_node_index(g, nId1);
-  f2=find_node_index(g, nId2);
+  f1 = find_node_index(g, nId1);
+  f2 = find_node_index(g, nId2);
 
-  if(f1==-1) return ERROR;
-  if(f2==-1) return ERROR;
+  if(f1 == -1) return ERROR;
+  if(f2 == -1) return ERROR;
 
-  g->connections[f1][f2]=1;
+  g->connections[f1][f2] = 1;
 
   return OK;
 }
@@ -105,11 +118,22 @@ Status graph_setNode (Graph *g, const Node *n){
 
   g->nodes[f]=node_copy(n);
 
-  return OK
+  return OK;
 }
 
 long * graph_getNodesId (const Graph *g){
+  int i, num;
+  long* Ids;
 
+  num = graph_getNumberOfNodes(g);
+
+  Ids = (long*) malloc(num * sizeof(long));
+
+  for(i = 0; i < num; i++){
+    Ids[i] = node_getId(g->nodes[i]);
+  }
+
+  return Ids;
 }
 
 int graph_getNumberOfNodes (const Graph *g){
@@ -134,11 +158,32 @@ int graph_getNumberOfEdges (const Graph *g){
 }
 
 Bool graph_areConnected (const Graph *g, const long nId1, const long nId2){
+  int i, j;
 
+  if(!g) return FALSE;
+  if(nId1 < 0 || nId2 < 0) return FALSE;
+
+  i = find_node_index(g, nId1);
+  j = find_node_index(g, nId2);
+
+  return g->connections[i][j];
 }
 
 int graph_getNumberOfConnectionsFrom (const Graph *g, const long fromId){
+  int i, num, k = 0;
+  long* j;
 
+  if(!g) return ERROR;
+  if(fromId < 0) return ERROR;
+
+  num = graph_getNumberOfNodes(g);
+  j = graph_getNodesId(g);
+
+  for(i = 0; i < num; i++){
+    if(graph_areConnected(g, fromId, j[i]) == TRUE) k++;
+  }
+
+  return k;
 }
 
 long* graph_getConnectionsFrom (const Graph *g, const long fromId){
@@ -153,7 +198,6 @@ Status graph_readFromFile (FILE *fin, Graph *g){
 
 }
 
-// It returns the index of the node with id nId1
 int find_node_index(const Graph * g, long nId1) {
   int i;
   
@@ -162,13 +206,10 @@ int find_node_index(const Graph * g, long nId1) {
   for(i=0; i < g->num_nodes; i++) {
     if (node_getId (g->nodes[i]) == nId1) return i;
   }
-  // ID not found
+
   return -1;
 }
 
-// It returns an array with the indices of the nodes connected to the node
-// whose index is index
-// It also allocates memory for the array.
 int* graph_getConnectionsIndex(const Graph * g, int index) {
   int *array = NULL, i, j = 0, size;
   
@@ -176,16 +217,15 @@ int* graph_getConnectionsIndex(const Graph * g, int index) {
   
   if (index < 0 || index >g->num_nodes) return NULL;
   
-  // get memory for the array
   size = node_getConnect (g->nodes[index]);
   
   array = (int *) malloc(sizeof (int) * size);
   if (!array) {
-  // print error message
+
   fprintf (stderr, "%s\n", strerror(errno));
   return NULL;
   }
-// assign values to the array with the indices of the connected nodes
+
   for(i = 0; i< g->num_nodes; i++) {
     if (g->connections[index][i] == TRUE) {
       array[j++] = i;

@@ -30,7 +30,6 @@ Node * node_init(){
 
   newNode = (Node*) malloc(sizeof(Node));
   if(!newNode){
-    printf("Error al reservar memoria creando el nodo");
     return NULL;
   }
 
@@ -43,7 +42,6 @@ Node * node_init(){
 }
 
 void node_free(void * n){
-  if(!n) return;
   
   free(n);
 
@@ -93,7 +91,7 @@ Status node_setId (Node *n, const long id){
 Status node_setName (Node *n, const char *name){
   if(!n || !name) return ERROR;
 
-  strcpy(n->name, name);
+  strncpy(n->name, name, NAME_L);
 
   return OK;
 }
@@ -110,7 +108,7 @@ int node_cmp (const void *n1, const void *n2){
   int cmp;
 
   if(!n1 || !n2) return ERROR;
-
+  
   cmp = strcmp(node_getName(n1), node_getName(n2));
 
   if(node_getId(n1) == node_getId(n2)){
