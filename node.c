@@ -138,7 +138,7 @@ int node_print (FILE *pf, const void *n){
 
   if(!n) return ERROR;
 
-  i = fprintf(pf, "[%ld, %s, %d, %d]\n",node_getId(n), node_getName(n), node_getConnect(n), node_getLabel(n));
+  i = fprintf(pf, "[%ld, %s, %d, %d]",node_getId(n), node_getName(n), node_getConnect(n), node_getLabel(n));
 
   return i;
 }

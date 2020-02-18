@@ -64,7 +64,7 @@ int main()
     
     fprintf(stdout, "Insertando nodo 2...resultado...: %d\n", (int)graph_insertNode(g1, n2));
 
-    fprintf(stdout, "A E S T H E T I C . . . G R A F O:\n");
+    fprintf(stdout, "GRAFO:\n");
     graph_print(stdout, g1);
 
     node_free(n1);

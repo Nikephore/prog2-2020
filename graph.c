@@ -52,23 +52,17 @@ void graph_free (Graph *g){
 }
 
 Status graph_insertNode (Graph *g, const Node *n){
-  Node *aux;
+  Node* aux = NULL;
   int i;
-  long* j;
 
   if(!g) return ERROR;
   if(!n) return ERROR;
-
-  j =graph_getNodesId(g);
   
-
-  for(i=0; i<g->num_nodes; i++){
-    if(node_getId(n)==j[i]) return ERROR;
-  }
+  if(find_node_index(g, node_getId(n)) != -1) return ERROR;
 
   aux = node_copy(n);
 
-  g->nodes[g->num_nodes]=aux;
+  g->nodes[g->num_nodes]= aux;
 
   for(i=0; i<g->num_nodes; i++){
     g->connections[i][g->num_nodes]=0;
@@ -103,14 +97,14 @@ Status graph_insertEdge (Graph *g, const long nId1, const long nId2){
 
 Node *graph_getNode (const Graph *g, long nId){
 
-  Node *n;
+  Node *n = NULL;
   int i;
 
   if(!g) return NULL;
 
-  i=find_node_index(g, nId);
+  i = find_node_index(g, nId);
 
-  n=g->nodes[i];
+  n = g->nodes[i];
 
   return n;
 }
@@ -131,7 +125,7 @@ Status graph_setNode (Graph *g, const Node *n){
 
 long * graph_getNodesId (const Graph *g){
   int i, num;
-  long* Ids;
+  long* Ids = NULL;
 
   num = graph_getNumberOfNodes(g);
 
@@ -179,7 +173,7 @@ Bool graph_areConnected (const Graph *g, const long nId1, const long nId2){
 
 int graph_getNumberOfConnectionsFrom (const Graph *g, const long fromId){
   int i, num, k = 0;
-  long* j;
+  long* j = NULL;
 
   if(!g) return ERROR;
   if(fromId < 0) return ERROR;
@@ -188,29 +182,38 @@ int graph_getNumberOfConnectionsFrom (const Graph *g, const long fromId){
   j = graph_getNodesId(g);
 
   for(i = 0; i < num; i++){
-    if(graph_areConnected(g, fromId, j[i]) || graph_areConnected(g, j[i], fromId)) k++;
+    if(graph_areConnected(g, fromId, j[i])) k++;
   }
+
+  free(j);
 
   return k;
 }
 
 long* graph_getConnectionsFrom (const Graph *g, const long fromId){
   int i, num, k = 0;
-  long* j;
-  long* x=NULL;
+  long* j = NULL;
+  long* x = NULL;
 
-  if(!g) return ERROR;
-  if(fromId < 0) return ERROR;
+  if(!g) return NULL;
+  if(fromId < 0) return NULL;
 
-  num = graph_getNumberOfNodes(g);
+  num = graph_getNumberOfConnectionsFrom(g, fromId);
+  if(num == 0) return NULL;
+
   j = graph_getNodesId(g);
 
+  x = (long*) malloc(num * sizeof(long));
+  if(!x) return NULL;
+
   for(i = 0; i < num; i++){
-    if(graph_areConnected(g, fromId, j[i]) || graph_areConnected(g, j[i], fromId)){
+    if(graph_areConnected(g, fromId, j[i])){
       x[k] = j[i];
       k++;
     }
   }
+
+  free(j);
 
   return x;
 }
@@ -229,13 +232,54 @@ int graph_print (FILE *pf, const Graph *g){
     for(j = 0; j < graph_getNumberOfConnectionsFrom(g, gNodes[i]); j++){
       k += fprintf(pf, " %ld", con[j]);
     }
+    fprintf(pf, "\n");
+    free(con);
   }
+
+  free(gNodes);
+  
 
   return k;
 }
 
 Status graph_readFromFile (FILE *fin, Graph *g){
+  Node *n = NULL;
+  char buffer[MAX_NODES], name[MAX_NODES];
+  int i, num = 0, id1, id2;
+  Status flag = ERROR;
 
+  if(fgets(buffer, MAX_NODES, fin)){
+    if(sscanf(buffer, "%d", &num) != 1) return flag;
+  }
+
+  n = node_init();
+  if(!n) return flag;
+
+  for(i = 0; i < num; i++){
+    if(fgets(buffer, MAX_NODES, fin)){
+      if(!sscanf(buffer, "%d %s", &id1, name)) break;
+    }
+    node_setName(n, name);
+    node_setId(n, id1);
+    if(graph_insertNode(g, n) == flag) break;
+  }
+
+  if(i < num){
+    node_free(n);
+    return flag;
+  }
+
+  while(fgets(buffer, MAX_NODES, fin)){
+    if(sscanf(buffer, "%d %d", &id1, &id2)){
+      if(graph_insertEdge(g, id1, id2) == flag) break;
+    }
+  }
+
+  if(feof(fin)) flag = OK;
+
+  node_free(n);
+
+  return flag;
 }
 
 int find_node_index(const Graph * g, long nId1) {
@@ -271,5 +315,6 @@ int* graph_getConnectionsIndex(const Graph * g, int index) {
       array[j++] = i;
     }
   }
+
   return array;
 }

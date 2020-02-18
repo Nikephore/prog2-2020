@@ -50,8 +50,8 @@ int main ()
     n2 = node_copy(n1);
 
     node_print(stdout, n1);
+    fprintf(stdout, "\n");
     node_print(stdout, n2);
-
     fprintf(stdout, "\n");
 
     if (node_cmp(n1, n2) == 0){
