@@ -39,10 +39,10 @@ int main()
     }
     
     fprintf(stdout, "Insertando nodo 1...resultado...: %d\n", graph_insertNode(g1, n1));
-    if(graph_insertNode(g1, n1) == ERROR) return -1;
+    /*if(graph_insertNode(g1, n1) == ERROR) return -1;*/
 
     fprintf(stdout, "Insertando nodo 2...resultado...: %d\n", graph_insertNode(g1, n2));
-    if(graph_insertNode(g1, n2) == ERROR) return -1;
+    /*if(graph_insertNode(g1, n2) == ERROR) return -1;*/
 
     graph_insertEdge(g1, node_getId(n2), node_getId(n1));
     fprintf(stdout, "Insertando edge: nodo 2 ---> nodo 1\n");
@@ -63,9 +63,8 @@ int main()
 
     
     fprintf(stdout, "Insertando nodo 2...resultado...: %d\n", (int)graph_insertNode(g1, n2));
-    if(graph_insertNode(g1, n2) == ERROR) return -1;
 
-    fprintf(stdout, "A E S T H E T I C . . . G R A F O:");
+    fprintf(stdout, "A E S T H E T I C . . . G R A F O:\n");
     graph_print(stdout, g1);
 
     node_free(n1);

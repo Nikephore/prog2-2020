@@ -54,9 +54,17 @@ void graph_free (Graph *g){
 Status graph_insertNode (Graph *g, const Node *n){
   Node *aux;
   int i;
+  long* j;
 
   if(!g) return ERROR;
   if(!n) return ERROR;
+
+  j =graph_getNodesId(g);
+  
+
+  for(i=0; i<g->num_nodes; i++){
+    if(node_getId(n)==j[i]) return ERROR;
+  }
 
   aux = node_copy(n);
 
@@ -180,18 +188,50 @@ int graph_getNumberOfConnectionsFrom (const Graph *g, const long fromId){
   j = graph_getNodesId(g);
 
   for(i = 0; i < num; i++){
-    if(graph_areConnected(g, fromId, j[i]) == TRUE) k++;
+    if(graph_areConnected(g, fromId, j[i]) || graph_areConnected(g, j[i], fromId)) k++;
   }
 
   return k;
 }
 
 long* graph_getConnectionsFrom (const Graph *g, const long fromId){
+  int i, num, k = 0;
+  long* j;
+  long* x=NULL;
 
+  if(!g) return ERROR;
+  if(fromId < 0) return ERROR;
+
+  num = graph_getNumberOfNodes(g);
+  j = graph_getNodesId(g);
+
+  for(i = 0; i < num; i++){
+    if(graph_areConnected(g, fromId, j[i]) || graph_areConnected(g, j[i], fromId)){
+      x[k] = j[i];
+      k++;
+    }
+  }
+
+  return x;
 }
 
 int graph_print (FILE *pf, const Graph *g){
+  int i, j, k = 0;
+  long* gNodes = NULL;
+  long* con = NULL;
 
+  gNodes = graph_getNodesId(g);
+
+  for(i=0; i<g->num_nodes; i++){
+    k += node_print(pf, graph_getNode(g, gNodes[i]));
+    con = graph_getConnectionsFrom(g, gNodes[i]);
+
+    for(j = 0; j < graph_getNumberOfConnectionsFrom(g, gNodes[i]); j++){
+      k += fprintf(pf, " %ld", con[j]);
+    }
+  }
+
+  return k;
 }
 
 Status graph_readFromFile (FILE *fin, Graph *g){

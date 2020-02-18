@@ -5,7 +5,7 @@ EXE = p1_e1 p1_e2
 all: $(EXE)
 
 $(EXE) : % : %.o node.o graph.o
-	$(CC) $(CFLAGS) -o $@ $@.o node.o
+	$(CC) $(CFLAGS) -o $@ $@.o node.o graph.o
 
 node.o: node.c node.h
 	$(CC) $(CFLAGS) -c -o node.o node.c
@@ -17,7 +17,7 @@ clean:
 		rm -f *.o core $(EXE)
 
 val:
-	valgrind --tool=memcheck --leak-check=yess ./p1_e1
+	valgrind --tool=memcheck --leak-check=yes ./p1_e2
 
 p1_e1t:
 	@./p1_e1
