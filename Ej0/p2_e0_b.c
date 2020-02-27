@@ -29,22 +29,24 @@ int main(){
 
     node_setName(n, "second");
     node_setId(n, 222);
-    
+
     stack_push(snode, (const void*)n);
     stack_push(sstring, (const void*)node_getName(n));
-
+    fprintf(stdout, "Print Stack nodes: \n");
     stack_print(stdout, snode);
-    fprintf(stdout, "\n");
+    fprintf(stdout, "Print Stack string: \n");
     stack_print(stdout, sstring);
 
+    fprintf(stdout, "Poping nodes.... \n");
     while(stack_isEmpty(snode)==FALSE){
 
         node_print(stdout, (Node*)stack_pop(snode));
     }
 
+    fprintf(stdout, "\nPoping nodes-names.... \n");
     while(stack_isEmpty(sstring)==FALSE){
 
-        fprintf(stdout, "El elemento extraido: %s\n", *(char *)stack_pop(sstring));
+        fprintf(stdout, "%c", *(char *)stack_pop(sstring));
     }
 
     node_free(n);
