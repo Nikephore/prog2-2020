@@ -32,7 +32,7 @@ int main(){
 **/
 Status reverseWords (char *strout, const char *strin){
   Stack *s=NULL;
-  char aux[strlen(strin)];
+  /*char aux[strlen(strin)];*/
   int i, j=0;
 
   s=stack_init(string_free, string_copy, string_print);
@@ -41,7 +41,7 @@ Status reverseWords (char *strout, const char *strin){
   for(i=0; i<strlen(strin); i++){
     if(strcmp((char *)stack_push(s, &strin[i]), "\0")){
       for(j=0; j<i; j++){
-        aux[j]=stack_pop(s);
+        strout[j]=*(char *)stack_pop(s);
       }
     }
   }
