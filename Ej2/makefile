@@ -5,6 +5,7 @@ LDFLAGS=-L./
 LDLIBS=-lstack_fp
 # -lm enlaza la biblioteca matematica, -pthread enlaza la biblioteca de hilos
 LIBS = -lm -pthread
+EXE = p2_e2
 all:p2_e2
 ######################################################################
 # $@ es el item que aparece a la izquierda de ':'
