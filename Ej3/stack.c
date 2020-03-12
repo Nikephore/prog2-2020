@@ -4,7 +4,7 @@
 #include "stack.h"
 #include "element.h"
 
-#define MAXSTACK 512
+#define MAXSTACK 1024
 
 struct _Stack {
     int top;
@@ -30,7 +30,7 @@ void stack_free(Stack *s){
     int i;
 
     if(!s) return;
-    
+
     for(i=0; i<MAXSTACK; i++){
         element_free(s->item[i]);
     }
