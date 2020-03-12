@@ -43,7 +43,7 @@ void stack_free(Stack *s){
 Status stack_push(Stack *s, const Element *ele){
     if(!s || !ele) return ERROR;
 
-    if(stack_isFull == TRUE) return ERROR;
+    if(stack_isFull(s) == TRUE) return ERROR;
 
     s->item[s->top] = element_copy(ele);
 

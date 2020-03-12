@@ -40,7 +40,7 @@ Status reverseWords (char *strout, const char *strin){
   if(!s) return ERROR;
 
   for(i=0; i<strlen(strin); i++){
-    if(strcmp((char *)stack_push(s, &strin[i]), "\0")){
+    if(strcmp((char *)stack_push(s, (const Element *)&strin[i]), "\0")){
       for(j=0; j<i; j++){
         strout[j]=*(char *)stack_pop(s);
       }

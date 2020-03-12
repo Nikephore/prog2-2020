@@ -1,6 +1,6 @@
 CC=gcc
 CFLAGS=-Wall -ggdb
-EXE = p2_e3_a
+EXE = p2_e3_a p2_e3_b
 
 all:$(EXE)
 

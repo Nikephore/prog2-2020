@@ -26,9 +26,21 @@ void element_free(Element *ele){
     return;
 }
 
-Element * element_setInfo(Element *, void*){
+Element * element_setInfo(Element *s, void* c){
+  if(!s || !c) return NULL;
+
+  if(s->a !=NULL) free(s->a);
+
+  s->a = (char *)malloc(sizeof(char));
+  char *temp = (char *)c;
+  (*s->a)=(*temp);
+
+  if(!s->a) return NULL;
+
+  return s;
 
 }
+
 void * element_getInfo(Element *ele){
     if(!ele) return NULL;
 
@@ -59,7 +71,7 @@ int element_print(FILE *f, const Element *ele){
 
     if(!f || !ele) return -1;
 
-    k=fprintf(f, [%s], *(ele->a));
+    k=fprintf(f, "[%s]", ele->a);
 
     if(!k) return -1;
 
